@@ -1,6 +1,5 @@
 # Spell Checker
-Spell Checker Project to learn how to use Hash Tables.
-
+Spell Checker Project using hash table
 
 # Hash Function
 
