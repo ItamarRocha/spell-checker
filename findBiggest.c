@@ -23,7 +23,7 @@ int main(int argc, char** argv){
     FILE *fp = fopen(file, "r");
     
     if(fp != NULL){
-        for(int i = 1; i <= 307855; i++){
+        for(int i = 1; !feof(fp); i++){
             fgets(str, 50, fp);
             str[strlen(str)-1] = '\0';
             
