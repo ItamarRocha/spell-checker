@@ -10,14 +10,13 @@ typedef struct node{
     struct node *next;
 }tNode;
 
-typedef struct TableElements{
-    int lengthOfElements;
+typedef struct buckets{
     tNode* node;
-}tTableElements;
+}tBuckets;
 
 typedef struct HashTable{
     int NumBuckets;
-    tTableElements* buckets;
+    tBuckets* buckets;
 }tHashTable;
 
 tHashTable* newHashTable(){
@@ -25,12 +24,9 @@ tHashTable* newHashTable(){
     tHashTable* t1 = (tHashTable*) malloc(sizeof(tHashTable));
     t1->NumBuckets = NUM_BUCKETS;
     for(i = 0; i < NUM_BUCKETS; i++)
-        t1->buckets[i] = NULL;
+        t1->buckets[i]->node = NULL;
     return t1;
 }
-
-
-tNode *buckets[NUM_BUCKETS];
 
 unsigned int h(char* key){
     //Funcao hash
@@ -42,16 +38,17 @@ void readDictionary(){
 
 int check(char** argv, tHashTable* t1){
     FILE *fp = fopen(argv[1], "r");
+    tHashTable* Hasht1 = newHashTable();
     tNode* cursor;
     char *string, found;
     int errorSum = 0;
     
     while(fscanf(fp, "%s", string) != EOF){
-        cursor = buckets[h(string)];   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
+        cursor = Hasht1->buckets[h(k)]->node;   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
         found = 0;
         
         while(cursor != NULL){    //Ou seja, caso chegarmos ao fim do bucket, paramos.
-            if(!strcmp(cursor->data, string)){
+            if(!strcmp(cursor->value, string)){
                 found = 1;
                 break;
             }
