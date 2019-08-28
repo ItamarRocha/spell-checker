@@ -89,7 +89,7 @@ void readDictionary(tHashTable* t1){
     }
 }
 
-int check(char* dir, tHashTable* t1){
+int check(tHashTable* t1, char* dir){
     FILE *fp = fopen(dir, "r");
     tNode* cursor;
     char *string, found;
@@ -121,9 +121,9 @@ int main(int argc, char** argv){
     readDictionary(t1);
     
     if(argc < 2)
-        check(FILE_DIR, &t1);
+        check(&t1, FILE_DIR);
     else if(argc == 2)
-        check(argv[1], &t1);
+        check(&t1, argv[1]);
     else{
         printf("\nMuitos parametros\n");
         printf(" ./exec [Arquivo.txt] ou somente ./exec \n");
