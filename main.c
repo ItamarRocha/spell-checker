@@ -130,8 +130,13 @@ int main(int argc, char** argv){
         return 1;
     }
     
-    printBucket(t1,3);
-    //scanf("%s,t1->buckets[10].node->value);
+    tHashTable* t1 = newHashTable();
+    strcpy(t1->buckets[5].node->value,"wallace");
+    t1->buckets[5].node->next = (tNode*) malloc (sizeof(tNode));
+    strcpy(t1->buckets[5].node->next->value, "gay");
+    //readDictionary(t1);
+    printBucket(t1,5);
+    
 
     return 0;
 }
