@@ -5,6 +5,7 @@
 #define MAX_LENGHT 40
 #define NUM_BUCKETS 10 //Arrumar
 #define DICTIONARY_DIR "*.txt"
+#define FILE_DIR "*.txt"
 
 typedef struct node{
     char value[100];
@@ -15,8 +16,8 @@ typedef struct buckets{
     tNode* node;
 }tBuckets;
 
-typedef struct HashTable{
-    int NumBuckets;
+typedef struct hashTable{
+    int numBuckets;
     tBuckets* buckets;
 }tHashTable;
 
@@ -88,47 +89,47 @@ void readDictionary(tHashTable* t1){
     }
 }
 
-//int check(char** argv, tHashTable* t1){
-//    FILE *fp = fopen(argv[1], "r");
-//    tNode* cursor;
-//    char *string, found;
-//    int errorSum = 0;
-//    
-//    while(fscanf(fp, "%s", string) != EOF){
-//        cursor = t1->buckets[h(string)].node;   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
-//        found = 0;
-//        
-//        while(cursor != NULL){    //Ou seja, caso chegarmos ao fim do bucket, paramos.
-//            if(!strcmp(cursor->value, string)){
-//                found = 1;
-//                break;
-//            }
-//            cursor = cursor->next;
-//        }
-//        
-//        if(!found)
-//            errorSum++;
-//    }
-//    
-//    fclose(fp);
-//    return errorSum;
-//}
+int check(char* dir, tHashTable* t1){
+    FILE *fp = fopen(dir, "r");
+    tNode* cursor;
+    char *string, found;
+    int errorSum = 0;
+    
+    while(fscanf(fp, "%s", string) != EOF){
+        cursor = t1->buckets[h(string)].node;   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
+        found = 0;
+        
+        while(cursor != NULL){    //Ou seja, caso chegarmos ao fim do bucket, paramos.
+            if(!strcmp(cursor->value, string)){
+                found = 1;
+                break;
+            }
+            cursor = cursor->next;
+        }
+        
+        if(!found)
+            errorSum++;
+    }
+    
+    fclose(fp);
+    return errorSum;
+}
 
-//int main(int argc, char** argv){
-//    if (argc < 2) {
-//        printf("\nFaltando parametros\n");
-//        printf(" ./exec [Arquivo.txt] \n");
-//        return 1;
-//    }
-//
-//    if (argc > 2) {
-//        printf("\nMuitos parametros\n");
-//        printf(" ./exec [Arquivo.txt] \n");
-//        return 1;
-//    }
-int main(){
+int main(int argc, char** argv){    
     tHashTable* t1 = newHashTable();
+    
     readDictionary(t1);
+    
+    if(argc < 2)
+        check(FILE_DIR, &t1);
+    else if(argc == 2)
+        check(argv[1], &t1);
+    else{
+        printf("\nMuitos parametros\n");
+        printf(" ./exec [Arquivo.txt] ou somente ./exec \n");
+        return 1;
+    }
+    
     printBucket(t1,3);
     //scanf("%s,t1->buckets[10].node->value);
 
