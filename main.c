@@ -27,11 +27,11 @@ tHashTable* newHashTable(){
     //sprintf(string , "oiWallace");
     //printf("%s\n",string);
     tHashTable* t1 = (tHashTable*) malloc(sizeof(tHashTable));
-    t1->NumBuckets = NUM_BUCKETS;
+    t1->numBuckets = NUM_BUCKETS;
     t1->buckets = (tBuckets *) malloc(NUM_BUCKETS*sizeof(tBuckets));
     
     for(i = 0; i < NUM_BUCKETS; i++){
-        t1->buckets[i].node = (tNode*) malloc(40 * sizeof(tNode));
+        t1->buckets[i].node = (tNode*) malloc(sizeof(tNode));
         t1->buckets[i].node->next = NULL;
         //t1->buckets[i].node->value = string;   
         //printf("%s\n",t1->buckets[i].node->value);
@@ -71,7 +71,7 @@ void readDictionary(tHashTable* t1){
     while(fscanf(fp,"%s",string)!= EOF){
         aux = t1->buckets[h(string)].node;
         
-        }
+        
         
         
         
@@ -107,21 +107,21 @@ int check(tHashTable* t1, char* dir){
 }
 
 int main(int argc, char** argv){    
+    
     tHashTable* t1 = newHashTable();
-    
-    readDictionary(t1);
-    
+    //readDictionary(t1);
+    /*
     if(argc < 2)
-        check(&t1, FILE_DIR);
+        check(t1, FILE_DIR);
     else if(argc == 2)
-        check(&t1, argv[1]);
+        check(t1, argv[1]);
     else{
         printf("\nMuitos parametros\n");
         printf(" ./exec [Arquivo.txt] ou somente ./exec \n");
         return 1;
-    }
+    }*/
     
-    tHashTable* t1 = newHashTable();
+    
     strcpy(t1->buckets[5].node->value,"wallace");
     t1->buckets[5].node->next = (tNode*) malloc (sizeof(tNode));
     strcpy(t1->buckets[5].node->next->value, "gay");
