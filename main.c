@@ -70,16 +70,7 @@ void readDictionary(tHashTable* t1){
     
     while(fscanf(fp,"%s",string)!= EOF){
         aux = t1->buckets[h(string)].node;
-        if(!aux){
-            aux = (tNode*) malloc (sizeof(tNode));
-            strcpy(aux->value,string);
-            aux->next = NULL;;    
-        }else{
-            while(aux!=NULL)
-                aux = aux->next;
-            aux = (tNode*) malloc (sizeof(tNode));
-            strcpy(aux->value,string);
-            aux->next = NULL;
+        
         }
         
         
