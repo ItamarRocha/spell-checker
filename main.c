@@ -3,9 +3,9 @@
 #include <stdlib.h>
 
 #define MAX_LENGTH 40
-#define NUM_BUCKETS 10 //Arrumar
-#define NUM_ELEMENTOS 17
-#define DICTIONARY_DIR "HashTestingDataBase.txt"
+#define NUM_BUCKETS 10000 //Arrumar
+#define NUM_ELEMENTOS 307855
+#define DICTIONARY_DIR "dictionary.txt"
 #define FILE_DIR "test.txt"
 
 typedef struct node{
@@ -67,6 +67,31 @@ void printBucket(tHashTable* t,int bucket){
     }
 }
 
+void bucketScattering(tHashTable* t){
+    tNode* n;
+    int j,i = 0;
+    int minimo = 100, maximo = -1; 
+    double media = 0;
+    
+    for(j = 0; j < (NUM_BUCKETS) ;j++){
+        n = t->buckets[j];
+        while(n != NULL){
+            n = n->next;
+            i++;
+        }
+        if(i < minimo)
+            minimo = i;
+        else if(i > maximo)
+            maximo = i;
+        media = i + media;
+        printf("%d elements in bucket %d\n",i,j);
+        i = 0;
+    }
+    media = media/NUM_BUCKETS;
+    printf("minimo = %d\nmaximo = %d\n",minimo,maximo);
+    printf("media = %lf\n",media);
+} 
+
 void readDictionary(tHashTable* t){
     FILE *fp = fopen(DICTIONARY_DIR, "r");
     
@@ -77,20 +102,21 @@ void readDictionary(tHashTable* t){
     
     size_t index;
     tNode* aux;
+    int numberOfWordsInDictionary = 0;
     
     char string[MAX_LENGTH];
     
     while(fscanf(fp,"%s",string)!= EOF){
         index = h(string);
-        
+        numberOfWordsInDictionary++;
         aux = (tNode*) malloc(sizeof(tNode));
         strcpy(aux->value, string);
         aux->next = t->buckets[index];
         t->buckets[index] = aux;
        
-        printf("%s ---- key = %ld\n", aux->value,index);
+        //printf("%s ---- key = %ld\n", aux->value,index);
     }
-    
+    printf("number of words = %d\n",numberOfWordsInDictionary);
     fclose(fp);
 }
 
@@ -130,8 +156,8 @@ int main(int argc, char** argv){
     
     tHashTable* hashT = newHashTable();
     readDictionary(hashT);
-    printBucket(hashT,5);
-
+    //printBucket(hashT,5);
+    bucketScattering(hashT);
     if(argc < 2)
         printf("\nNumero de erros: %d\n", check(hashT, FILE_DIR));
     else if(argc == 2)
