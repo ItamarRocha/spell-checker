@@ -103,7 +103,7 @@ int check(tHashTable* t, char* directory){
     }
     
     tNode* cursor;
-    char *string, found;
+    char string[MAX_LENGTH], found;
     int errorSum = 0;
     
     while(fscanf(fp, "%s", string) != EOF){
