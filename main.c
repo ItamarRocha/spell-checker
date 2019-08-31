@@ -8,7 +8,7 @@
 #define NUM_BUCKETS 230891
 #define NUM_ELEMENTOS 307855
 #define DICTIONARY_DIR "dictionary.txt"
-#define FILE_DIR "testando.txt"
+#define FILE_DIR "plano13_Tok.txt"
 
 typedef struct node{
     char value[MAX_LENGTH];

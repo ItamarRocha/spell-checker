@@ -2,38 +2,47 @@
 #include <stdio.h>
 
 
-void Tokenize(char * directory){
+int Tokenize(char * directory){
     FILE *fp = fopen(directory, "r");
+    FILE *fo = fopen("plano13_Tok.txt", "w+");
     
     if(fp == NULL){
         printf("Erro ao abrir o arquivo para leitura\n");
         return -1;
     }
+    if(fo == NULL){
+        printf("Erro ao abrir o arquivo para escrita\n");
+        return -1;
+    }
     
+    char string[101];
+    char * tok = " \t\r!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~\n";
+
+    char * token;
+
     while(fscanf(fp, "%s", string) != EOF){
         
-        
+        token = strtok(string , tok);
+
+        while(token != NULL){
+            fprintf(fo,"%s\n",token);
+
+            token = strtok(NULL, tok);
+        }
+
     }
     
     fclose(fp);
+    fclose(fo);
+
+    return 0;
 }
 
 
 
 int main () {
-   char str[80] = "Essa eh a minha frase legal";
-   const char s[2] = " ";
-   char * token;
    
-   /* get the first token */
-   token = strtok(str, s);
-   
-   /* walk through other tokens */
-   while( token != NULL ) {
-      printf( " %s\n", token );
-    
-      token = strtok(NULL, s);
-   }
+   Tokenize("plano17.txt");
    
    return(0);
 }
