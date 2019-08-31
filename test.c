@@ -31,7 +31,7 @@ tHashTable* newHashTable(){
     return t;
 }
 
-size_t h2(char * key){
+size_t h3(char * key){
     size_t hash;
     int sum = 0;
     int i = 0;
@@ -46,7 +46,7 @@ size_t h2(char * key){
     return hash%NUM_BUCKETS;
 }
 
-size_t h(char * key){
+size_t h1(char * key){
     size_t hash = 0, i =0;
     
     while(key[i] != '\0'){
@@ -55,6 +55,19 @@ size_t h(char * key){
     }
     
     return hash % NUM_BUCKETS;
+}
+uint32_t h(char * key) {
+  size_t i = 0;
+  uint32_t hash = 0;
+  while (key[i] != '\0') {
+    hash += key[i++];
+    hash += hash << 10;
+    hash ^= hash >> 6;
+  }
+  hash += hash << 3;
+  hash ^= hash >> 11;
+  hash += hash << 15;
+  return hash % NUM_BUCKETS;
 }
 
 void printBucket(tHashTable* t,int bucket){
@@ -92,7 +105,6 @@ double bucketScattering(tHashTable* t){
     media = media/NUM_BUCKETS;
     printf("minimo = %d\nmaximo = %d\n",minimo,maximo);
     printf("media = %lf\n",media);
-
     return media;
 } 
 
@@ -104,7 +116,7 @@ void readDictionary(tHashTable* t){
         
     }
     
-    size_t index;
+    uint32_t index;
     tNode* aux;
     int numberOfWordsInDictionary = 0;
     
@@ -155,6 +167,7 @@ int check(tHashTable* t, char* directory){
     fclose(fp);
     return errorSum;
 }
+
 void desvio_padrao(tHashTable* t, double media){
     tNode* n;
     int j,i = 0;
@@ -179,7 +192,6 @@ void desvio_padrao(tHashTable* t, double media){
     printf("desvio padrao = %lf\n",dp);
 
 }
-
 
 int main(int argc, char** argv){    
     double media;
