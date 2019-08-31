@@ -3,12 +3,14 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+#include <wchar.h>
+#include <time.h>
 
 #define MAX_LENGTH 40
 #define NUM_BUCKETS 230891
 #define NUM_ELEMENTOS 307855
 #define DICTIONARY_DIR "dictionary.txt"
-#define FILE_DIR "plano13_Tok.txt"
+#define FILE_DIR "dictionary.txt"
 
 typedef struct node{
     char value[MAX_LENGTH];
@@ -56,6 +58,7 @@ size_t h1(char * key){
     
     return hash % NUM_BUCKETS;
 }
+
 uint32_t h(char * key) {
   size_t i = 0;
   uint32_t hash = 0;
@@ -76,7 +79,7 @@ void printBucket(tHashTable* t,int bucket){
     
     n = t->buckets[bucket];
     while(n != NULL){
-        printf("Elemento %d do bucket = %s\n",i+1,n->value);
+        //printf("Elemento %d do bucket = %s\n",i+1,n->value);
         n = n->next;
         i++;
     }
@@ -99,7 +102,7 @@ double bucketScattering(tHashTable* t){
         else if(i > maximo)
             maximo = i;
         media = i + media;
-        printf("%d elements in bucket %d\n",i,j);
+        //printf("%d elements in bucket %d\n",i,j);
         i = 0;
     }
     media = media/NUM_BUCKETS;
@@ -136,7 +139,7 @@ void readDictionary(tHashTable* t){
     fclose(fp);
 }
 
-int check(tHashTable* t, char* directory){
+int check(tHashTable* t, char* directory, clock_t* time){
     FILE *fp = fopen(directory, "r");
     
     if(fp == NULL){
@@ -145,27 +148,42 @@ int check(tHashTable* t, char* directory){
     }
     
     tNode* cursor;
-    char string[MAX_LENGTH], found;
+    char *string,recebido[300] ,found;
     int errorSum = 0;
-    
-    while(fscanf(fp, "%s", string) != EOF){
-        cursor = t->buckets[h(string)];   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
-        found = 0;
-        
-        while(cursor != NULL){    //Ou seja, caso chegarmos ao fim do bucket, paramos.
-            if(!strcmp(cursor->value, string)){
-                found = 1;
-                break;
+    int i = 0;
+    *time = clock();
+    while(1){
+        fgets(recebido,300,fp);
+        if(feof(fp))
+            break;
+        recebido[strlen(recebido) - 1] = '\0';
+        string = recebido;
+        string = strtok(string, " \r!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~\n");
+        while(string != NULL && string[i] != '\n'){
+           
+            cursor = t->buckets[h(string)];   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
+            found = 0;
+            
+            while(cursor != NULL){    //Ou seja, caso chegarmos ao fim do bucket, paramos.
+                if(!strcmp(cursor->value, string)){
+                    found = 1;
+                    break;
+                }
+                cursor = cursor->next;
             }
-            cursor = cursor->next;
+            
+            if(!found){
+                errorSum++;
+                
+                printf("%d- %s \n",errorSum,string);
+            }
+            string = strtok(NULL, " \r!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~\n");
+            i++;
+            
         }
-        
-        if(!found){
-            errorSum++;
-            printf("%d- %s \n",errorSum,string);
-        }
-    }
-    
+        i = 0;
+    }   
+    *time = clock() - *time;
     fclose(fp);
     return errorSum;
 }
@@ -197,21 +215,27 @@ void desvio_padrao(tHashTable* t, double media){
 
 int main(int argc, char** argv){    
     double media;
+    clock_t* time;
+    
     tHashTable* hashT = newHashTable();
+    
     readDictionary(hashT);
     //printBucket(hashT,5);
-    //media = bucketScattering(hashT);
-    //desvio_padrao(hashT,media);
-
+    media = bucketScattering(hashT);
+    desvio_padrao(hashT,media);
     if(argc < 2)
-        printf("\nNumero de erros: %d\n", check(hashT, FILE_DIR));
+        printf("\nNumero de erros: %d\n", check(hashT, FILE_DIR,time));
     else if(argc == 2)
-        printf("\nNumero de erros: %d\n", check(hashT, argv[1]));
+        printf("\nNumero de erros: %d\n", check(hashT, argv[1],time));
     else{
         printf("\nMuitos parametros\n");
         printf(" ./exec [Arquivo.txt] ou somente ./exec \n");
         return 1;
     }
+    
+    double timeTaken = ((double)*time)/CLOCKS_PER_SEC;
+    printf("time = %.4lf ms\n",timeTaken*1000);
 
     return 0;
 }
+
