@@ -3,14 +3,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
-#include <wchar.h>
 #include <time.h>
 
 #define MAX_LENGTH 40
 #define NUM_BUCKETS 230891
 #define NUM_ELEMENTOS 307855
-#define DICTIONARY_DIR "dictionary.txt"
-#define FILE_DIR "dictionary.txt"
+#define DICTIONARY_DIR "txt/dictionary.txt"
+#define FILE_DIR "txt/constituicaoASCII.txt"
 
 typedef struct node{
     char value[MAX_LENGTH];
@@ -121,13 +120,12 @@ void readDictionary(tHashTable* t){
     
     uint32_t index;
     tNode* aux;
-    int numberOfWordsInDictionary = 0;
+    
     
     char string[MAX_LENGTH];
     
     while(fscanf(fp,"%s",string)!= EOF){
         index = h(string);
-        numberOfWordsInDictionary++;
         aux = (tNode*) malloc(sizeof(tNode));
         strcpy(aux->value, string);
         aux->next = t->buckets[index];
@@ -135,11 +133,13 @@ void readDictionary(tHashTable* t){
        
         //printf("%s ---- key = %ld\n", aux->value,index);
     }
-    printf("number of words = %d\n",numberOfWordsInDictionary);
+    
     fclose(fp);
 }
 
 int check(tHashTable* t, char* directory, clock_t* time){
+    int numberOfWordsInDictionary = 0;
+    
     FILE *fp = fopen(directory, "r");
     
     if(fp == NULL){
@@ -160,7 +160,7 @@ int check(tHashTable* t, char* directory, clock_t* time){
         string = recebido;
         string = strtok(string, " \r!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~\n");
         while(string != NULL && string[i] != '\n'){
-           
+            numberOfWordsInDictionary++;
             cursor = t->buckets[h(string)];   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
             found = 0;
             
@@ -184,6 +184,7 @@ int check(tHashTable* t, char* directory, clock_t* time){
         i = 0;
     }   
     *time = clock() - *time;
+    printf("number of words = %d\n",numberOfWordsInDictionary);
     fclose(fp);
     return errorSum;
 }
@@ -221,8 +222,8 @@ int main(int argc, char** argv){
     
     readDictionary(hashT);
     //printBucket(hashT,5);
-    media = bucketScattering(hashT);
-    desvio_padrao(hashT,media);
+    //media = bucketScattering(hashT);
+    //desvio_padrao(hashT,media);
     if(argc < 2)
         printf("\nNumero de erros: %d\n", check(hashT, FILE_DIR,time));
     else if(argc == 2)
