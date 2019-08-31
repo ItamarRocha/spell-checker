@@ -5,10 +5,10 @@
 #include <math.h>
 
 #define MAX_LENGTH 40
-#define NUM_BUCKETS 215503//Arrumar
+#define NUM_BUCKETS 230891
 #define NUM_ELEMENTOS 307855
 #define DICTIONARY_DIR "dictionary.txt"
-#define FILE_DIR "test.txt"
+#define FILE_DIR "testando.txt"
 
 typedef struct node{
     char value[MAX_LENGTH];
@@ -160,8 +160,10 @@ int check(tHashTable* t, char* directory){
             cursor = cursor->next;
         }
         
-        if(!found)
+        if(!found){
             errorSum++;
+            printf("%d- %s \n",errorSum,string);
+        }
     }
     
     fclose(fp);
@@ -198,8 +200,9 @@ int main(int argc, char** argv){
     tHashTable* hashT = newHashTable();
     readDictionary(hashT);
     //printBucket(hashT,5);
-    media = bucketScattering(hashT);
-    desvio_padrao(hashT,media);
+    //media = bucketScattering(hashT);
+    //desvio_padrao(hashT,media);
+
     if(argc < 2)
         printf("\nNumero de erros: %d\n", check(hashT, FILE_DIR));
     else if(argc == 2)
