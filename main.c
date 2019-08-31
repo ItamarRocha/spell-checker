@@ -191,6 +191,7 @@ size_t h1(char * key){
     
     return hash % NUM_BUCKETS;
 }
+
 uint32_t h(char * key) {
   size_t i = 0;
   uint32_t hash = 0;
