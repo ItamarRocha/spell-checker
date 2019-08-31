@@ -2,8 +2,10 @@
 Spell Checker Project using hash table
 
 # Hash Function
- For this spell checker we analyzed two main hash functions, the Multiplication method and One at time Jenkins. Tests results :
-    
+ For this spell checker we analyzed two main hash functions, the Multiplication method and One at time Jenkins. 
+ 
+ Tests results :
+   
     * Min = minimum number of elements in a bucket
     * Max = maximum number of elements in a bucket
     * Avg = Average of elements in a bucket
