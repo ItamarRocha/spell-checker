@@ -179,12 +179,12 @@ int check(tHashTable* t, char* directory, tArray* errors){
     }
     
     tNode* cursor;
-    char *string, recebido[300], found,
+    char *string, recebido[500], found,
          *token = " \n\r\t!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~";
     int numberOfWords = 0;
     
     while(!feof(fp)){
-        fgets(recebido,300,fp);
+        fgets(recebido,500,fp);
         recebido[strlen(recebido) - 1] = '\0';
         string = strtok(recebido, token);
         while(string != NULL){
@@ -277,7 +277,8 @@ int main(int argc, char** argv){
         printf(" ./exec [Arquivo.txt] ou somente ./exec \n");
         return 1;
     }
-    
-    archiveRelatory(numberOfWords, ((double)time)/CLOCKS_PER_SEC, errors);
+    printf("%ld\n",errors->size);
+    printf("%.4lf ms\n",((double)time*1000)/CLOCKS_PER_SEC);
+    archiveRelatory(numberOfWords, ((double)time*1000)/CLOCKS_PER_SEC, errors);
     return 0;
 }
