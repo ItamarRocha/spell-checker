@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
-#include <wchar.h>
 #include <time.h>
 
 #define MAX_LENGTH 40
