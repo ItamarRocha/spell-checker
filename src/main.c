@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+#include <wchar.h>
 #include <time.h>
 
 #define MAX_LENGTH 40
@@ -21,6 +22,12 @@ typedef struct hashTable{
     tNode** buckets;
 }tHashTable;
 
+typedef struct array{
+    char** data;
+    size_t size,
+           maxSize; 
+}tArray;
+
 tHashTable* newHashTable(){
     tHashTable* t = (tHashTable*) malloc(sizeof(tHashTable));
     t->numBuckets = NUM_BUCKETS;
@@ -30,6 +37,31 @@ tHashTable* newHashTable(){
         t->buckets[i] = NULL;
     
     return t;
+}
+
+tArray* newArray(){
+    tArray* ar = (tArray*) malloc(sizeof(tArray));
+    ar->data = (char**) malloc(sizeof(char*));
+    ar->size = 0;
+    ar->maxSize = 1;
+    
+    return ar;
+}
+
+void push(tArray* ar, char* value){
+    if(ar->size == ar->maxSize){
+        ar->maxSize *= 2;
+        
+        char** new = (char**) malloc(ar->maxSize*sizeof(char*));
+        
+        for(size_t i = 0; i < ar->size; i++)
+            new[i] = ar->data[i];
+            
+        free(ar->data);
+        ar->data = new;
+    }
+    ar->data[ar->size] = (char*) malloc(strlen(value)*sizeof(char));
+    strcpy(ar->data[ar->size++], value);
 }
 
 size_t h3(char * key){
@@ -59,17 +91,19 @@ size_t h1(char * key){
 }
 
 uint32_t h(char * key) {
-  size_t i = 0;
-  uint32_t hash = 0;
-  while (key[i] != '\0') {
-    hash += key[i++];
-    hash += hash << 10;
-    hash ^= hash >> 6;
-  }
-  hash += hash << 3;
-  hash ^= hash >> 11;
-  hash += hash << 15;
-  return hash % NUM_BUCKETS;
+    size_t i = 0;
+    uint32_t hash = 0;
+    
+    while (key[i] != '\0') {
+        hash += key[i++];
+        hash += hash << 10;
+        hash ^= hash >> 6;
+    }
+    
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    hash += hash << 15;
+    return hash % NUM_BUCKETS;
 }
 
 void printBucket(tHashTable* t,int bucket){
@@ -115,7 +149,7 @@ void readDictionary(tHashTable* t){
     
     if(fp == NULL){
         printf("Erro ao abrir o dicionario\n");
-        
+        exit(-1);
     }
     
     uint32_t index;
@@ -137,9 +171,7 @@ void readDictionary(tHashTable* t){
     fclose(fp);
 }
 
-int check(tHashTable* t, char* directory, clock_t* time){
-    int numberOfWordsInDictionary = 0;
-    
+int check(tHashTable* t, char* directory, tArray* errors){
     FILE *fp = fopen(directory, "r");
     
     if(fp == NULL){
@@ -148,19 +180,16 @@ int check(tHashTable* t, char* directory, clock_t* time){
     }
     
     tNode* cursor;
-    char *string,recebido[300] ,found;
-    int errorSum = 0;
-    int i = 0;
-    *time = clock();
-    while(1){
+    char *string, recebido[300], found,
+         *token = " \n\r\t!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~";
+    int numberOfWords = 0;
+    
+    while(!feof(fp)){
         fgets(recebido,300,fp);
-        if(feof(fp))
-            break;
         recebido[strlen(recebido) - 1] = '\0';
-        string = recebido;
-        string = strtok(string, " \r!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~\n");
-        while(string != NULL && string[i] != '\n'){
-            numberOfWordsInDictionary++;
+        string = strtok(recebido, token);
+        while(string != NULL){
+            numberOfWords++;
             cursor = t->buckets[h(string)];   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
             found = 0;
             
@@ -173,20 +202,14 @@ int check(tHashTable* t, char* directory, clock_t* time){
             }
             
             if(!found){
-                errorSum++;
-                
-                printf("%d- %s \n",errorSum,string);
+                push(errors, string);
             }
-            string = strtok(NULL, " \r!\"#$%&()*+,./0123456789:;<=>?@[\\]^_`{|}~\n");
-            i++;
-            
+            string = strtok(NULL, token);
         }
-        i = 0;
     }   
-    *time = clock() - *time;
-    printf("number of words = %d\n",numberOfWordsInDictionary);
+    
     fclose(fp);
-    return errorSum;
+    return numberOfWords;
 }
 
 void desvio_padrao(tHashTable* t, double media){
@@ -214,29 +237,48 @@ void desvio_padrao(tHashTable* t, double media){
 
 }
 
-int main(int argc, char** argv){    
-    double media;
-    clock_t* time;
+void archiveRelatory(int numberOfWords,double timeTaken, tArray* errors){
+    FILE* archive;
+    archive = fopen("txt/result.txt","w");
     
-    tHashTable* hashT = newHashTable();
+    if(archive == NULL){
+        printf("Erro ao abrir o arquivo para escrita\n");
+        exit(-1);
+    }
+    
+    fprintf(archive, "Numero total de palavras do texto: %d\n", numberOfWords);
+    fprintf(archive, "Tempo total de verificação: %.4lf ms\n", timeTaken);
+    fprintf(archive, "Numero de palavras que falharam no spell check %ld\n", errors->size);
+    fprintf(archive, "Lista de palavras que falharam no spell check \n\n");
+    fprintf(archive, "Num.Ocorrencia - Palavra\n--------------------------------\n");
+    for(size_t i = 0; i < errors->size; i++)
+        fprintf(archive, "%ld - %s\n", i+1, errors->data[i]);
+    
+    fclose(archive);
+}
+
+int main(int argc, char** argv){   
+    tHashTable* hashT = newHashTable(); 
+    tArray* errors = newArray();
+    int numberOfWords;
+    clock_t time;
     
     readDictionary(hashT);
-    //printBucket(hashT,5);
-    //media = bucketScattering(hashT);
-    //desvio_padrao(hashT,media);
-    if(argc < 2)
-        printf("\nNumero de erros: %d\n", check(hashT, FILE_DIR,time));
-    else if(argc == 2)
-        printf("\nNumero de erros: %d\n", check(hashT, argv[1],time));
-    else{
+
+    if(argc < 2){
+        time = clock();
+        numberOfWords = check(hashT, FILE_DIR, errors);
+        time = clock() - time;
+    }else if(argc == 2){
+        time = clock();
+        numberOfWords = check(hashT, argv[1], errors);
+        time = clock() - time;
+    }else{
         printf("\nMuitos parametros\n");
         printf(" ./exec [Arquivo.txt] ou somente ./exec \n");
         return 1;
     }
     
-    double timeTaken = ((double)*time)/CLOCKS_PER_SEC;
-    printf("time = %.4lf ms\n",timeTaken*1000);
-
+    archiveRelatory(numberOfWords, ((double)time)/CLOCKS_PER_SEC, errors);
     return 0;
 }
-
