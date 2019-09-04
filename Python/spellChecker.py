@@ -3,8 +3,7 @@ import time
 #start = time.ctime()
 #stop = time.ctime()
 
-file = open('constituicaofederal.txt')
-
+file = open('../txt/constituicaofederal.txt')
 
 
 dictionary = dict()
@@ -19,7 +18,7 @@ for line in file:
 
 file.close()
 
-directory = 'constituicaoASCII.txt'
+directory = '../txt/constituicaoASCII.txt'
 
 const = open(directory)
 error = 0
