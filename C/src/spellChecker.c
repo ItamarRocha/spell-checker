@@ -8,8 +8,10 @@
 #define MAX_LENGTH 40
 #define NUM_BUCKETS 230891
 #define NUM_ELEMENTOS 307855
-#define DICTIONARY_DIR "txt/dictionary.txt"
-#define FILE_DIR "txt/constituicaoASCII.txt"
+
+#define DICTIONARY_DIR "../txt/dictionary.txt"
+#define FILE_DIR "../txt/constituicaoASCII.txt"
+#define RESULTS_DIR "../txt/results_C.txt"
 
 typedef struct node{
     char value[MAX_LENGTH];
@@ -238,12 +240,7 @@ void desvio_padrao(tHashTable* t, double media){
 
 void archiveRelatory(int numberOfWords,double timeTaken, tArray* errors){
     FILE* archive;
-    archive = fopen("txt/result.txt","w");
-    
-    if(archive == NULL){
-        printf("Erro ao abrir o arquivo para escrita\n");
-        exit(-1);
-    }
+    archive = fopen(RESULTS_DIR,"w");
     
     fprintf(archive, "Numero total de palavras do texto: %d\n", numberOfWords);
     fprintf(archive, "Tempo total de verificação: %.4lf ms\n", timeTaken);

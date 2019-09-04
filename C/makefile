@@ -4,7 +4,7 @@ TARGET = spellChkr
 
 LIBS = -lm
 
-SRCDIR = src/main.c
+SRCDIR = src/spellChecker.c
 
 CFLAGS = -g
 

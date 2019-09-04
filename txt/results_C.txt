@@ -1,5 +1,5 @@
 Numero total de palavras do texto: 57181
-Tempo total de verificação: 12.2450 ms
+Tempo total de verificação: 18.5490 ms
 Numero de palavras que falharam no spell check 23967
 Lista de palavras que falharam no spell check 
 
