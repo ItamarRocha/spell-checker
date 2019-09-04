@@ -39,4 +39,5 @@ stop = time.clock()
 timer = stop - start
 
 timer = timer * 1000
-print(timer, 'ms')
+print('Numero de erros: ', error)
+print('Tempo: ' , timer, 'ms')
