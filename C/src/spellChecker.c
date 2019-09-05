@@ -113,7 +113,7 @@ void printBucket(tHashTable* t,int bucket){
     
     n = t->buckets[bucket];
     while(n != NULL){
-        //printf("Elemento %d do bucket = %s\n",i+1,n->value);
+        printf("Elemento %d do bucket = %s\n",i+1,n->value);
         n = n->next;
         i++;
     }
@@ -136,7 +136,7 @@ double bucketScattering(tHashTable* t){
         else if(i > maximo)
             maximo = i;
         media = i + media;
-        //printf("%d elements in bucket %d\n",i,j);
+        printf("%d elements in bucket %d\n",i,j);
         i = 0;
     }
     media = media/NUM_BUCKETS;
@@ -165,8 +165,6 @@ void readDictionary(tHashTable* t){
         strcpy(aux->value, string);
         aux->next = t->buckets[index];
         t->buckets[index] = aux;
-       
-        //printf("%s ---- key = %ld\n", aux->value,index);
     }
     
     fclose(fp);
@@ -191,7 +189,7 @@ int check(tHashTable* t, char* directory, tArray* errors){
         string = strtok(recebido, token);
         while(string != NULL){
             numberOfWords++;
-            cursor = t->buckets[h(string)];   //Sujeito a alteracoes, de acordo com a implementacao dos buckets.
+            cursor = t->buckets[h(string)];   
             found = 0;
             
             while(cursor != NULL){    //Ou seja, caso chegarmos ao fim do bucket, paramos.
