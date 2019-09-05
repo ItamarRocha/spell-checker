@@ -57,6 +57,17 @@ int check(char* directory, std::vector<std::string>& errors){
     return numberOfWords;
 }
 
+size_t bucketScattering(){
+    std::ofstream out;
+    out.open("../txt/numBuckets.txt", std::ios::out);
+
+    for(size_t i = 0; i < hashTable.bucket_count(); i++)
+        out << hashTable.bucket_size(i) << "\n";
+
+    out.close();
+}
+
+
 int main(int argc, char** argv){
     int numberOfWords;
     std::vector<std::string> errors;
@@ -89,9 +100,11 @@ int main(int argc, char** argv){
             << "Num.Ocorrencia - Palavra\n--------------------------------\n";
 
     for(size_t i = 0; i < errors.size(); i++)
-        archive << errors[i] << "\n";
+        archive << i+1 << " - " << errors[i] << "\n";
     
     archive.close();
+    
+    bucketScattering();
 
     std::cout << "Number of errors: " << errors.size() << "\n"
               << "Time taken: " << std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count() << "ms\n";
